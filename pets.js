@@ -71,6 +71,23 @@ function updateFile(index, age, kind, name) {
     })
 }
 
+function destroyFile(index) {
+    const currValues = fs.readFileSync('./pets.json', 'utf-8');
+    const currValuesArr = JSON.parse(currValues);
+
+    currValuesArr.splice(index, 1);
+
+    const stringCurrVal = JSON.stringify(currValuesArr);
+
+    fs.writeFile('./pets.json', stringCurrVal, err => {
+        if (err) {
+            console.log('Error writing file', err);
+        } else {
+            console.log('Updated Successfully');
+        }
+    })
+}
+
 switch (subcommand) {
     case 'read':
         const index = process.argv[3];
@@ -88,6 +105,10 @@ switch (subcommand) {
         const k = process.argv[5];
         const n = process.argv[6];
         updateFile(i, a, k, n)
+        break;
+    case 'destroy':
+        const f = process.argv[3];
+        destroyFile(f);
         break;
     default:
         console.error('Usage: node pets.js [read | create | update | destroy]');
