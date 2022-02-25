@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-
+app.use(express.json());
 
 
 app.get('/pets', function(req, res) {
@@ -26,6 +26,27 @@ app.get('/pets/:index', function(req, res) {
         } else {
             res.setHeader('Content-Type', 'text/plain').status(404).send('Not a valid index');
         }
+
+    })
+})
+
+app.post('/pets', function(req, res) {
+    fs.readFile('./pets.json', 'utf8', (err, jsonString) => {
+        if (err) {
+            console.log("File read failed:", err)
+            return
+        }
+        const parsedJSON = JSON.parse(jsonString);
+        const newPet = (req.body);
+        parsedJSON.push(newPet);
+        fs.writeFile('./pets.json', JSON.stringify(parsedJSON), (err) => {
+            if (err) {
+                console.error('File Write Failed:', err);
+            } else {
+                console.log(newPet, " Was added!");
+                res.send(newPet);
+            }
+        })
 
     })
 })
