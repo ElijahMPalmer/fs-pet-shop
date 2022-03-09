@@ -7,6 +7,7 @@ app.use(express.json());
 app.get('/pets', function(req, res) {
     fs.readFile('./pets.json', 'utf8', (err, jsonString) => {
         if (err) {
+            res.setHeader
             console.log("File read failed:", err)
             return
         }
