@@ -28,9 +28,14 @@ app.get('/pets/:pet_id', function(req, res) {
 
 app.post('/pets', function(req, res) {
     const { age, name, kind } = req.body;
-    pool.query("INSERT INTO pets(age, name, kind) VALUES ($1, $2, $3) RETURNING *;", [age, name, kind], (err, result) => {
-        res.send(result.rows[0]);
-    })
+    pool.query("INSERT INTO pets(age, name, kind) VALUES ($1, $2, $3) RETURNING *;", [age, name, kind])
+        .then((result) => {
+            res.send(result.rows[0]);
+        }).catch((err) => {
+            console.log(err)
+            res.sendStatus(500);
+        })
+
 })
 
 app.patch('/pets/:pet_id', (req, res) => {
@@ -47,29 +52,15 @@ app.patch('/pets/:pet_id', (req, res) => {
     });
 })
 
-// app.delete('/pets/:index', (req, res) => {
-//     const index = req.params.index;
-//     fs.readFile('pets.json', 'UTF-8', (err, data) => {
-//         const parsedData = JSON.parse(data);
-//         parsedData.splice(index, 1);
-//         fs.writeFile('./pets.json', JSON.stringify(parsedData), (err) => {
-//             if (err) {
-//                 console.error('File Write Failed:', err);
-//             } else {
-//                 console.log("Pet was deleted");
-//                 res.send(parsedData)
-//             }
-//         })
-
-
-//     })
-// })
-
 app.delete('/pets/:pet_id', (req, res) => {
     const id = req.params.pet_id
     pool.query('DELETE FROM pets WHERE id = $1 RETURNING *', [id], (err, result) => {
         res.send(result.rows[0]);
     })
+})
+
+app.use((req, res, next) => {
+    res.status(500).send("Not Found");
 })
 
 
